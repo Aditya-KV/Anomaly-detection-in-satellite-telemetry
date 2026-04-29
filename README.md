@@ -67,7 +67,11 @@ graph TD
 **Concept**: Detects anomalies by randomly partitioning the data space and observing how quickly individual samples become isolated in a tree structure. Anomalies, being few and different, are easier to isolate (they tend to have shorter path lengths).
 
 **Mathematics**: The anomaly score $s(x, n)$ for an observation $x$ given a sample size $n$ is defined as:
-$$ s(x, n) = 2^{-\frac{E(h(x))}{c(n)}} $$
+
+$$
+s(x, n) = 2^{-\frac{E(h(x))}{c(n)}}
+$$
+
 Where $h(x)$ is the path length of observation $x$, $E(h(x))$ is the expected path length, and $c(n)$ is the average path length of an unsuccessful search in a Binary Search Tree. As $s(x,n) \to 1$, the instance is more likely an anomaly.
 
 ```mermaid
@@ -88,7 +92,11 @@ graph TD
 **Concept**: Learns a decision boundary around normal data, classifying points outside that boundary as anomalies. We use an RBF-kernel One-Class SVM trained only on data from normal operating periods.
 
 **Mathematics**: It solves the following optimization problem:
-$$ \min_{w, \xi, \rho} \frac{1}{2} ||w||^2 + \frac{1}{\nu l} \sum_{i=1}^l \xi_i - \rho $$
+
+$$
+\min_{w, \xi, \rho} \frac{1}{2} ||w||^2 + \frac{1}{\nu l} \sum_{i=1}^l \xi_i - \rho
+$$
+
 Subject to: $(w \cdot \Phi(x_i)) \ge \rho - \xi_i$ and $\xi_i \ge 0$.
 Here, $\nu$ roughly controls the expected anomaly fraction, and $\Phi(x)$ is the non-linear feature mapping (RBF Kernel).
 
@@ -96,7 +104,10 @@ Here, $\nu$ roughly controls the expected anomaly fraction, and $\Phi(x)$ is the
 **Concept**: We inject synthetic anomalies into the training data and label these injected data points as anomalies. This allows the Random Forest to learn discriminative features that distinguish nominal telemetry from anomalous telemetry.
 
 **Mathematics**: The RF builds $K$ decision trees. For a new instance $x$, the predicted probability of it being an anomaly is the average over all trees:
-$$ P(y=1 | x) = \frac{1}{K} \sum_{k=1}^K P_k(y=1 | x) $$
+
+$$
+P(y=1 | x) = \frac{1}{K} \sum_{k=1}^K P_k(y=1 | x)
+$$
 
 ```mermaid
 graph TD
@@ -117,9 +128,17 @@ graph TD
 **Code Functions**: `smooth_scores()`, `apply_persistence_rule()`, `smart_thresholding()`
 
 **Mathematics**: The normalized scores are fused into a final score:
-$$ S_{final} = w_1 S_{IF} + w_2 S_{SVM} + w_3 S_{RF} $$
+
+$$
+S_{final} = w_1 S_{IF} + w_2 S_{SVM} + w_3 S_{RF}
+$$
+
 Then, a moving average filter is applied to eliminate transient spikes:
-$$ \hat{S}_t = \frac{1}{W} \sum_{i=t-W/2}^{t+W/2} S_{final, i} $$
+
+$$
+\hat{S}_t = \frac{1}{W} \sum_{i=t-W/2}^{t+W/2} S_{final, i}
+$$
+
 A persistence rule is applied such that an alert is only triggered if $\hat{S}_t > \text{Threshold}$ for $k$ consecutive time steps.
 
 ---
